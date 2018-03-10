@@ -30,6 +30,10 @@ def set_verbose_progress(verbose):
     global _verbose
     _verbose = verbose
 
+def get_verbose_progress():
+    if _verbose:
+        return '--verbose'
+    return None
 
 def error(msg):
     logging.error(msg, exc_info=True)
@@ -50,6 +54,7 @@ def runcmd(argv, *argvs, **kwargs):
     env = kwargs.get('env', os.environ.copy())
     env['LC_ALL'] = 'C'
     kwargs['env'] = env
+    argv = list(filter(None.__ne__, argv))
     return cliapp.runcmd(argv, *argvs, **kwargs)
 
 

@@ -28,6 +28,7 @@ from .runcmd import (
     runcmd,
     runcmd_chroot,
     set_verbose_progress,
+    get_verbose_progress,
     progress,
     error,
 )

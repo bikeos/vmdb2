@@ -47,6 +47,7 @@ class QemuDebootstrapStepRunner(vmdb.StepRunnerInterface):
             'Qemu-debootstrap {} {} {} {}'.format(suite, target, mirror, arch))
         vmdb.runcmd(
             ['qemu-debootstrap',
+             vmdb.get_verbose_progress(),
              '--arch', arch,
              '--variant', variant,
              '--components', ','.join(components), suite,

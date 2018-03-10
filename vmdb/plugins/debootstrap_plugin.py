@@ -43,4 +43,6 @@ class DebootstrapStepRunner(vmdb.StepRunnerInterface):
             raise Exception('missing arg for debootstrap step')
         vmdb.progress(
             'Debootstrap {} {} {}'.format(suite, target, mirror))
-        vmdb.runcmd(['debootstrap', '--variant', variant, suite, target, mirror])
+        vmdb.runcmd(['debootstrap',
+                     vmdb.get_verbose_progress(),
+                     '--variant', variant, suite, target, mirror])
