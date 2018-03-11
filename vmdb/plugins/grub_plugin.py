@@ -147,6 +147,12 @@ class GrubStepRunner(vmdb.StepRunnerInterface):
             'quiet',
             'systemd.show_status=false',
         ]
+        user_kernel_params = step.get('cmdline', '-')
+        if user_kernel_params == '':
+            kernel_params = []
+        elif user_kernel_params != '-':
+            kernel_params = user_kernel_params.split()
+
         if console == 'serial':
             kernel_params.extend([
                 'quiet',
@@ -157,7 +163,9 @@ class GrubStepRunner(vmdb.StepRunnerInterface):
                 'console=ttyS0,115200n8',
             ])
 
-        self.set_grub_cmdline_config(chroot, kernel_params)
+        if len(kernel_params) > 0:
+            self.set_grub_cmdline_config(chroot, kernel_params)
+
         if console == 'serial':
             self.add_grub_serial_console(chroot)
 
