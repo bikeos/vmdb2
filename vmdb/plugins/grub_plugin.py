@@ -161,6 +161,10 @@ class GrubStepRunner(vmdb.StepRunnerInterface):
         if console == 'serial':
             self.add_grub_serial_console(chroot)
 
+        defaults = step.get('defaults')
+        if defaults:
+            self.add_grub_defaults(chroot, defaults)
+
         vmdb.runcmd_chroot(chroot, ['grub-mkconfig', '-o', '/boot/grub/grub.cfg'])
         vmdb.runcmd_chroot(
             chroot, [
@@ -231,10 +235,7 @@ class GrubStepRunner(vmdb.StepRunnerInterface):
 
     def set_grub_cmdline_config(self, chroot, kernel_params):
         param_string = ' '.join(kernel_params)
-
-        filename = self.chroot_path(chroot, '/etc/default/grub')
-
-        with open(filename) as f:
+        with open(self.get_default_grub(chroot)) as f:
             text = f.read()
 
         lines = text.splitlines()
@@ -242,13 +243,18 @@ class GrubStepRunner(vmdb.StepRunnerInterface):
                  if not line.startswith('GRUB_CMDLINE_LINUX_DEFAULT')]
         lines.append('GRUB_CMDLINE_LINUX_DEFAULT="{}"'.format(param_string))
 
-        with open(filename, 'w') as f:
+        with open(self.get_default_grub(chroot), 'w') as f:
             f.write('\n'.join(lines) + '\n')
 
     def add_grub_serial_console(self, chroot):
-        filename = self.chroot_path(chroot, '/etc/default/grub')
-
-        with open(filename, 'a') as f:
+        with open(self.get_default_grub(chroot), 'a') as f:
             f.write('GRUB_TERMINAL=serial\n')
             f.write('GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 '
                     '--word=8 --parity=no --stop=1"\n')
+
+    def add_grub_defaults(self, chroot, defaults):
+        with open(self.get_default_grub(chroot), 'a') as f:
+            f.write(defaults)
+
+    def get_default_grub(self, chroot):
+        return self.chroot_path(chroot, '/etc/default/grub')
